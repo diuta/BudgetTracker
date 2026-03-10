@@ -1,32 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useSettings } from "@/hooks/useSettings";
 import { clearAllData, exportData, importData } from "@/lib/storage";
-import { Settings } from "@/lib/types";
-import { Sun, Moon, Monitor, Download, Upload, Trash2, AlertTriangle, Check } from "lucide-react";
-
-const CURRENCIES = [
-    { code: "USD", symbol: "$", label: "US Dollar" },
-    { code: "EUR", symbol: "€", label: "Euro" },
-    { code: "GBP", symbol: "£", label: "British Pound" },
-    { code: "JPY", symbol: "¥", label: "Japanese Yen" },
-    { code: "IDR", symbol: "Rp", label: "Indonesian Rupiah" },
-    { code: "SGD", symbol: "S$", label: "Singapore Dollar" },
-    { code: "AUD", symbol: "A$", label: "Australian Dollar" },
-    { code: "CAD", symbol: "C$", label: "Canadian Dollar" },
-    { code: "INR", symbol: "₹", label: "Indian Rupee" },
-    { code: "CNY", symbol: "¥", label: "Chinese Yuan" },
-];
-
-const THEMES: { value: Settings["theme"]; label: string; icon: React.ElementType }[] = [
-    { value: "light", label: "Light", icon: Sun },
-    { value: "dark", label: "Dark", icon: Moon },
-    { value: "system", label: "System", icon: Monitor },
-];
+import { PageHeader } from "@/components/ui/PageHeader";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 export default function SettingsPage() {
-    const { settings, updateSettings } = useSettings();
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [importSuccess, setImportSuccess] = useState(false);
     const [importError, setImportError] = useState("");
@@ -47,14 +26,14 @@ export default function SettingsPage() {
         const file = e.target.files?.[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = (ev) => {
+        reader.onload = ev => {
             try {
                 importData(ev.target?.result as string);
                 setImportSuccess(true);
                 setImportError("");
                 setTimeout(() => { setImportSuccess(false); window.location.reload(); }, 1500);
             } catch {
-                setImportError("Invalid file. Please use a valid Spendings backup.");
+                setImportError("Invalid backup file. Please use a valid Spendings export.");
             }
         };
         reader.readAsText(file);
@@ -68,167 +47,88 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto animate-fade-in">
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-primary">Settings</h1>
-                <p className="text-sm text-secondary mt-0.5">Customize your experience</p>
-            </div>
+        <div className="animate-fade-in" style={{ maxWidth: "680px" }}>
+            <PageHeader eyebrow="Configuration" title="Settings" />
 
-            <div className="space-y-4">
-                {/* Appearance */}
-                <section className="bg-card rounded-2xl border card-shadow" style={{ borderColor: "rgb(var(--border))", backgroundColor: "rgb(var(--bg-card))" }}>
-                    <div className="px-5 py-4 border-b" style={{ borderColor: "rgb(var(--border))" }}>
-                        <h2 className="text-sm font-semibold text-primary">Appearance</h2>
+            <div className="card" style={{ marginBottom: "24px" }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: "1.05rem", fontWeight: 600, color: "var(--ink)", marginBottom: "16px" }}>Currency</div>
+                <hr className="rule-ghost" style={{ marginBottom: "20px" }} />
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+                    <div>
+                        <div style={{ fontFamily: "var(--font-mono)", fontSize: "1rem", fontWeight: 700, color: "var(--ink)", letterSpacing: "0.05em", marginBottom: "4px" }}>IDR — Indonesian Rupiah</div>
+                        <div className="label-caps">Rp • Dot separator • Auto-thousands on input</div>
                     </div>
-                    <div className="p-5">
-                        <p className="text-xs text-secondary mb-3">Theme</p>
-                        <div className="flex gap-2">
-                            {THEMES.map(({ value, label, icon: Icon }) => (
-                                <button
-                                    key={value}
-                                    onClick={() => updateSettings({ theme: value })}
-                                    className={`flex-1 flex flex-col items-center gap-2 py-3 px-2 rounded-xl border text-xs font-medium transition-all ${settings.theme === value
-                                            ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400"
-                                            : "text-secondary hover:text-primary hover:border-current"
-                                        }`}
-                                    style={{ borderColor: settings.theme === value ? undefined : "rgb(var(--border))" }}
-                                >
-                                    <Icon size={18} />
-                                    {label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* Currency */}
-                <section className="bg-card rounded-2xl border card-shadow" style={{ borderColor: "rgb(var(--border))", backgroundColor: "rgb(var(--bg-card))" }}>
-                    <div className="px-5 py-4 border-b" style={{ borderColor: "rgb(var(--border))" }}>
-                        <h2 className="text-sm font-semibold text-primary">Currency</h2>
-                    </div>
-                    <div className="p-5">
-                        <div className="grid grid-cols-2 gap-2">
-                            {CURRENCIES.map(({ code, symbol, label }) => (
-                                <button
-                                    key={code}
-                                    onClick={() => updateSettings({ currency: code, currencySymbol: symbol })}
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-medium transition-all ${settings.currency === code
-                                            ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400"
-                                            : "text-secondary hover:text-primary"
-                                        }`}
-                                    style={{ borderColor: settings.currency === code ? undefined : "rgb(var(--border))" }}
-                                >
-                                    <span className="text-base w-6 text-center">{symbol}</span>
-                                    <div className="text-left">
-                                        <div className="text-xs font-semibold">{code}</div>
-                                        <div className="text-xs opacity-70 truncate">{label}</div>
-                                    </div>
-                                    {settings.currency === code && <Check size={14} className="ml-auto" />}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* Data management */}
-                <section className="bg-card rounded-2xl border card-shadow" style={{ borderColor: "rgb(var(--border))", backgroundColor: "rgb(var(--bg-card))" }}>
-                    <div className="px-5 py-4 border-b" style={{ borderColor: "rgb(var(--border))" }}>
-                        <h2 className="text-sm font-semibold text-primary">Data</h2>
-                    </div>
-                    <div className="p-5 space-y-3">
-                        <p className="text-xs text-secondary">All data is stored securely in your browser. You can export it to create a backup or import it on another device.</p>
-
-                        <div className="flex flex-col sm:flex-row gap-2">
-                            <button
-                                onClick={handleExport}
-                                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border text-sm font-medium text-secondary hover:text-primary hover:border-current transition-all"
-                                style={{ borderColor: "rgb(var(--border))" }}
-                            >
-                                <Download size={15} />
-                                Export Backup
-                            </button>
-                            <button
-                                onClick={() => fileInputRef.current?.click()}
-                                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border text-sm font-medium transition-all ${importSuccess
-                                        ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600"
-                                        : "text-secondary hover:text-primary hover:border-current"
-                                    }`}
-                                style={{ borderColor: importSuccess ? undefined : "rgb(var(--border))" }}
-                            >
-                                {importSuccess ? <Check size={15} /> : <Upload size={15} />}
-                                {importSuccess ? "Imported!" : "Import Backup"}
-                            </button>
-                            <input ref={fileInputRef} type="file" accept=".json" onChange={handleImport} className="hidden" />
-                        </div>
-                        {importError && <p className="text-xs text-red-500">{importError}</p>}
-                    </div>
-                </section>
-
-                {/* Danger zone */}
-                <section
-                    className="bg-card rounded-2xl border card-shadow"
-                    style={{ borderColor: "rgb(var(--border))", backgroundColor: "rgb(var(--bg-card))" }}
-                >
-                    <div className="px-5 py-4 border-b" style={{ borderColor: "rgb(var(--border))" }}>
-                        <h2 className="text-sm font-semibold text-red-500">Danger Zone</h2>
-                    </div>
-                    <div className="p-5">
-                        <div className="flex items-start gap-4">
-                            <div className="flex-1">
-                                <p className="text-sm font-medium text-primary">Clear all data</p>
-                                <p className="text-xs text-secondary mt-0.5">Permanently delete all transactions, categories, and settings.</p>
-                            </div>
-                            <button
-                                onClick={() => setShowClearConfirm(true)}
-                                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-50 dark:bg-red-950/30 text-red-500 hover:bg-red-100 dark:hover:bg-red-950/50 text-sm font-medium transition-colors flex-shrink-0"
-                            >
-                                <Trash2 size={14} />
-                                Clear
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                {/* About */}
-                <div className="text-center py-2">
-                    <p className="text-xs text-muted">Spendings · Data stored locally in your browser · Free forever</p>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: "2rem", color: "var(--crimson)", fontWeight: 700, lineHeight: 1 }}>Rp</div>
                 </div>
             </div>
 
-            {/* Clear confirm modal */}
+            <div className="card" style={{ marginBottom: "24px" }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: "1.05rem", fontWeight: 600, color: "var(--ink)", marginBottom: "16px" }}>Categories</div>
+                <hr className="rule-ghost" style={{ marginBottom: "20px" }} />
+                <div className="label-caps" style={{ lineHeight: 1.9 }}>
+                    🛍️ Shopping &nbsp;•&nbsp; 🍜 Food & Hangout &nbsp;•&nbsp; ⚡ Bills & Subscriptions<br />
+                    🛒 Groceries &nbsp;•&nbsp; 🚨 Unexpected Expenses &nbsp;•&nbsp; 🚗 Transport
+                </div>
+                <div style={{ fontFamily: "var(--font-body)", fontSize: "0.9rem", color: "var(--ink-light)", marginTop: "12px" }}>
+                    Categories are fixed and curated for personal use — no customization needed.
+                </div>
+            </div>
+
+            <div className="card" style={{ marginBottom: "24px" }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: "1.05rem", fontWeight: 600, color: "var(--ink)", marginBottom: "16px" }}>Data Management</div>
+                <hr className="rule-ghost" style={{ marginBottom: "20px" }} />
+                <div className="label-caps" style={{ marginBottom: "20px", lineHeight: 1.9 }}>
+                    All data is stored in your browser&apos;s localStorage.<br />
+                    No account, no server, no cloud. Export regularly to prevent data loss.
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 0", borderBottom: "1px solid var(--cream-rule)" }}>
+                    <div>
+                        <div style={{ fontFamily: "var(--font-body)", fontSize: "1rem", color: "var(--ink)", marginBottom: "2px" }}>Export Backup</div>
+                        <div className="label-caps">Download all data as JSON</div>
+                    </div>
+                    <button className="btn-outline" onClick={handleExport}>Export →</button>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 0" }}>
+                    <div>
+                        <div style={{ fontFamily: "var(--font-body)", fontSize: "1rem", color: "var(--ink)", marginBottom: "2px" }}>Import Backup</div>
+                        <div className="label-caps">Restore data from a JSON backup file</div>
+                    </div>
+                    <button className={importSuccess ? "btn-crimson" : "btn-outline"} onClick={() => fileInputRef.current?.click()}>
+                        {importSuccess ? "✓ Done" : "Import ↑"}
+                    </button>
+                    <input ref={fileInputRef} type="file" accept=".json" onChange={handleImport} className="hidden" />
+                </div>
+                {importError && (
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--crimson)", marginTop: "8px", letterSpacing: "0.06em" }}>
+                        ⚠ {importError}
+                    </div>
+                )}
+            </div>
+
+            <div className="card" style={{ borderTop: "3px solid var(--crimson)" }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: "1.05rem", fontWeight: 600, color: "var(--crimson)", marginBottom: "16px" }}>Danger Zone</div>
+                <hr className="rule-ghost" style={{ marginBottom: "20px" }} />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
+                    <div>
+                        <div style={{ fontFamily: "var(--font-body)", fontSize: "1rem", color: "var(--ink)", marginBottom: "2px" }}>Clear All Data</div>
+                        <div className="label-caps">Permanently erase all transactions</div>
+                    </div>
+                    <button className="btn-crimson" onClick={() => setShowClearConfirm(true)}>Clear</button>
+                </div>
+            </div>
+
+            <div style={{ marginTop: "40px", paddingTop: "24px", borderTop: "1px solid var(--cream-rule)", textAlign: "center" }}>
+                <div className="label-caps" style={{ lineHeight: 2 }}>Spendings • Est. MMXXV • Local Storage • Free Forever</div>
+            </div>
+
             {showClearConfirm && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center px-4"
-                    style={{ backgroundColor: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
-                >
-                    <div
-                        className="bg-card rounded-2xl p-6 max-w-sm w-full animate-scale-in shadow-2xl"
-                        style={{ backgroundColor: "rgb(var(--bg-card))" }}
-                    >
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-950/50 flex items-center justify-center">
-                                <AlertTriangle size={18} className="text-red-500" />
-                            </div>
-                            <h3 className="text-base font-semibold text-primary">Clear everything?</h3>
-                        </div>
-                        <p className="text-sm text-secondary mb-5">This will permanently delete all your transactions, custom categories, and settings. This cannot be undone.</p>
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => setShowClearConfirm(false)}
-                                className="flex-1 py-2.5 rounded-xl border text-sm font-medium text-secondary hover:text-primary transition-colors"
-                                style={{ borderColor: "rgb(var(--border))" }}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleClearAll}
-                                className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors"
-                            >
-                                Yes, clear all
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <ConfirmDialog
+                    title="Erase everything?"
+                    message="This will permanently delete all transactions. Consider exporting a backup first."
+                    confirmLabel="Yes, Clear All"
+                    onConfirm={handleClearAll}
+                    onCancel={() => setShowClearConfirm(false)}
+                />
             )}
         </div>
     );

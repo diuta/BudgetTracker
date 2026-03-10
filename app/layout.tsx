@@ -1,25 +1,17 @@
 import type { Metadata } from "next";
-import "./globals.css";
-import { AppShell } from "@/components/AppShell";
+import "@/app/globals.css";
+import { Layout } from "@/components/layout/Layout";
 
 export const metadata: Metadata = {
-  title: "Spendings – Track Your Money",
-  description: "A minimalistic spending tracker that stores your data locally.",
+  title: "Spendings — Personal Finance Ledger",
+  description: "Track your personal finances with an editorial aesthetic.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en">
       <body>
-        <AppShell>{children}</AppShell>
+        <Layout>{children}</Layout>
       </body>
     </html>
   );

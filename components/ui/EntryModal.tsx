@@ -1,18 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Transaction, Category } from "@/lib/types";
+import type { Transaction, Category } from "@/lib/types";
 import { format } from "date-fns";
-import { inputToIDR, idrPreview, idrToInput } from "@/lib/utils";
+import { inputToIDR, idrPreview, idrToInput } from "@/utils/formatCurrency";
 
-interface Props {
+interface EntryModalProps {
     transaction?: Transaction | null;
     categories: Category[];
     onSave: (data: Omit<Transaction, "id" | "createdAt">) => void;
     onClose: () => void;
 }
 
-export function TransactionModal({ transaction, categories, onSave, onClose }: Props) {
+export function EntryModal({ transaction, categories, onSave, onClose }: EntryModalProps) {
     const isEdit = Boolean(transaction);
     const backdropRef = useRef<HTMLDivElement>(null);
 
@@ -34,9 +34,12 @@ export function TransactionModal({ transaction, categories, onSave, onClose }: P
         return () => { document.body.style.overflow = ""; };
     }, []);
 
-    const filteredCategories = type === "income"
-        ? categories.filter(c => c.id === "income")
-        : expenseCategories;
+    const filteredCategories = type === "income" ? categories.filter(c => c.id === "income") : expenseCategories;
+
+    const handleTypeChange = (t: "income" | "expense") => {
+        setType(t);
+        setCategoryId(t === "income" ? "income" : defaultExpenseCat);
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -48,25 +51,17 @@ export function TransactionModal({ transaction, categories, onSave, onClose }: P
 
     const preview = idrPreview(amountRaw);
 
-    // When type changes, reset category to first valid one
-    const handleTypeChange = (t: "income" | "expense") => {
-        setType(t);
-        if (t === "income") setCategoryId("income");
-        else setCategoryId(defaultExpenseCat);
-    };
-
     return (
         <div
             ref={backdropRef}
             className="fixed inset-0 z-50 flex items-end md:items-center justify-center"
             style={{ backgroundColor: "rgba(26,16,8,0.75)" }}
-            onClick={(e) => { if (e.target === backdropRef.current) onClose(); }}
+            onClick={e => { if (e.target === backdropRef.current) onClose(); }}
         >
             <div
                 className="w-full max-w-lg animate-slide-up md:animate-scale-in"
-                style={{ backgroundColor: "var(--cream)", borderTop: "3px solid var(--crimson)", borderRadius: "0 0 0 0" }}
+                style={{ backgroundColor: "var(--cream)", borderTop: "3px solid var(--crimson)" }}
             >
-                {/* Header */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "24px 28px 20px", borderBottom: "1px solid var(--cream-rule)" }}>
                     <div>
                         <div className="label-caps" style={{ marginBottom: "3px" }}>{isEdit ? "Edit Entry" : "New Entry"}</div>
@@ -78,8 +73,6 @@ export function TransactionModal({ transaction, categories, onSave, onClose }: P
                 </div>
 
                 <form onSubmit={handleSubmit} style={{ padding: "28px", display: "flex", flexDirection: "column", gap: "24px" }}>
-
-                    {/* Type toggle */}
                     <div>
                         <div className="label-caps" style={{ marginBottom: "10px" }}>Type</div>
                         <div style={{ display: "flex", border: "1px solid var(--ink-mid)" }}>
@@ -98,9 +91,7 @@ export function TransactionModal({ transaction, categories, onSave, onClose }: P
                                         textTransform: "uppercase",
                                         border: "none",
                                         cursor: "pointer",
-                                        backgroundColor: type === t
-                                            ? (t === "expense" ? "var(--crimson)" : "var(--ink)")
-                                            : "transparent",
+                                        backgroundColor: type === t ? (t === "expense" ? "var(--crimson)" : "var(--ink)") : "transparent",
                                         color: type === t ? "var(--cream)" : "var(--ink-light)",
                                         transition: "all 0.15s",
                                     }}
@@ -111,7 +102,6 @@ export function TransactionModal({ transaction, categories, onSave, onClose }: P
                         </div>
                     </div>
 
-                    {/* Amount */}
                     <div>
                         <div className="label-caps" style={{ marginBottom: "6px" }}>
                             Amount <span style={{ color: "var(--ink-ghost)", fontWeight: 400 }}>(in thousands)</span>
@@ -133,42 +123,25 @@ export function TransactionModal({ transaction, categories, onSave, onClose }: P
                         )}
                     </div>
 
-                    {/* Category */}
                     <div>
                         <div className="label-caps" style={{ marginBottom: "6px" }}>Category</div>
                         <select value={categoryId} onChange={e => setCategoryId(e.target.value)} className="select-editorial">
                             {filteredCategories.map(cat => (
-                                <option key={cat.id} value={cat.id}>
-                                    {cat.emoji} {cat.name}
-                                </option>
+                                <option key={cat.id} value={cat.id}>{cat.emoji} {cat.name}</option>
                             ))}
                         </select>
                     </div>
 
-                    {/* Date */}
                     <div>
                         <div className="label-caps" style={{ marginBottom: "6px" }}>Date</div>
-                        <input
-                            type="date"
-                            value={date}
-                            onChange={e => setDate(e.target.value)}
-                            required
-                            className="input-editorial"
-                        />
+                        <input type="date" value={date} onChange={e => setDate(e.target.value)} required className="input-editorial" />
                     </div>
 
-                    {/* Note */}
                     <div>
                         <div className="label-caps" style={{ marginBottom: "6px" }}>
                             Note <span style={{ color: "var(--ink-ghost)", fontWeight: 400 }}>(optional)</span>
                         </div>
-                        <input
-                            type="text"
-                            placeholder="Description..."
-                            value={note}
-                            onChange={e => setNote(e.target.value)}
-                            className="input-editorial"
-                        />
+                        <input type="text" placeholder="Description..." value={note} onChange={e => setNote(e.target.value)} className="input-editorial" />
                     </div>
 
                     <hr className="rule-ghost" />

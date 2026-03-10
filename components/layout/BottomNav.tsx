@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
-    { href: "/", label: "Home" },
-    { href: "/transactions", label: "Txns" },
-    { href: "/categories", label: "Tags" },
-    { href: "/settings", label: "Config" },
+    { href: "/", label: "Dashboard" },
+    { href: "/transactions", label: "Transactions" },
+    { href: "/categories", label: "Categories" },
+    { href: "/settings", label: "Settings" },
 ];
 
 export function BottomNav() {
@@ -15,12 +15,8 @@ export function BottomNav() {
 
     return (
         <nav
-            className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex"
-            style={{
-                backgroundColor: "var(--ink)",
-                borderTop: "2px solid var(--crimson)",
-                paddingBottom: "env(safe-area-inset-bottom)",
-            }}
+            className="fixed bottom-0 left-0 right-0 md:hidden z-30 flex"
+            style={{ backgroundColor: "var(--ink)", borderTop: "2px solid var(--ink-mid)" }}
         >
             {NAV_ITEMS.map(({ href, label }) => {
                 const active = pathname === href;
@@ -33,18 +29,15 @@ export function BottomNav() {
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
-                            justifyContent: "center",
-                            padding: "12px 4px",
+                            padding: "12px 4px 10px",
                             fontFamily: "var(--font-mono)",
-                            fontSize: "0.6rem",
-                            fontWeight: active ? 700 : 400,
-                            letterSpacing: "0.12em",
+                            fontSize: "0.55rem",
+                            letterSpacing: "0.1em",
                             textTransform: "uppercase",
                             color: active ? "var(--cream)" : "var(--ink-ghost)",
                             textDecoration: "none",
-                            transition: "color 0.15s",
-                            borderTop: active ? "2px solid var(--crimson)" : "2px solid transparent",
-                            marginTop: "-2px",
+                            borderTop: `2px solid ${active ? "var(--crimson)" : "transparent"}`,
+                            transition: "all 0.15s",
                         }}
                     >
                         {label}
