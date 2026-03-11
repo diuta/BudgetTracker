@@ -34,8 +34,8 @@ export function TransactionRow({ tx, cat, isLast, onEdit, onDelete }: Transactio
                 {cat && <span style={{ width: "8px", height: "8px", backgroundColor: cat.color, borderRadius: "2px", flexShrink: 0 }} />}
                 {cat?.emoji} {cat?.name ?? "—"}
             </span>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.82rem", fontWeight: 600, textAlign: "right", color: tx.type === "income" ? "var(--ink)" : "var(--crimson)", whiteSpace: "nowrap" }}>
-                {tx.type === "income" ? "+" : "−"}{formatIDR(tx.amount)}
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.82rem", fontWeight: 600, textAlign: "right", color: "var(--crimson)", whiteSpace: "nowrap" }}>
+                −{formatIDR(tx.amount)}
             </span>
             <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
                 <button className="btn-ghost" onClick={() => onEdit(tx)} style={{ padding: 0, fontSize: "0.58rem" }}>[edit]</button>
@@ -67,8 +67,8 @@ export function DashboardTransactionRow({ tx, cat }: DashboardTransactionRowProp
                 {cat && <span style={{ width: "8px", height: "8px", backgroundColor: cat.color, borderRadius: "2px", flexShrink: 0 }} />}
                 {cat?.emoji} {cat?.name ?? "—"}
             </span>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.85rem", fontWeight: 600, color: tx.type === "income" ? "var(--ink)" : "var(--crimson)", textAlign: "right", whiteSpace: "nowrap" }}>
-                {tx.type === "income" ? "+" : "−"}{formatIDR(tx.amount)}
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.85rem", fontWeight: 600, color: "var(--crimson)", textAlign: "right", whiteSpace: "nowrap" }}>
+                −{formatIDR(tx.amount)}
             </span>
         </div>
     );

@@ -8,22 +8,16 @@ export function filterByMonth(transactions: Transaction[], year: number, month: 
     return transactions.filter(tx => isWithinInterval(parseISO(tx.date), { start, end }));
 }
 
-export function calcTotals(transactions: Transaction[]) {
-    let income = 0;
-    let expense = 0;
-    for (const tx of transactions) {
-        if (tx.type === "income") income += tx.amount;
-        else expense += tx.amount;
-    }
-    return { income, expense, net: income - expense };
+export function calcTotalSpent(transactions: Transaction[]): number {
+    let total = 0;
+    for (const tx of transactions) total += tx.amount;
+    return total;
 }
 
 export function groupByCategory(transactions: Transaction[]): Record<string, number> {
     const map: Record<string, number> = {};
     for (const tx of transactions) {
-        if (tx.type === "expense") {
-            map[tx.categoryId] = (map[tx.categoryId] || 0) + tx.amount;
-        }
+        map[tx.categoryId] = (map[tx.categoryId] || 0) + tx.amount;
     }
     return map;
 }
@@ -31,10 +25,8 @@ export function groupByCategory(transactions: Transaction[]): Record<string, num
 export function groupByDay(transactions: Transaction[], year: number, month: number): { day: string; amount: number }[] {
     const map: Record<string, number> = {};
     filterByMonth(transactions, year, month).forEach(tx => {
-        if (tx.type === "expense") {
-            const key = format(parseISO(tx.date), "d MMM");
-            map[key] = (map[key] || 0) + tx.amount;
-        }
+        const key = format(parseISO(tx.date), "d MMM");
+        map[key] = (map[key] || 0) + tx.amount;
     });
     return Object.entries(map)
         .map(([day, amount]) => ({ day, amount }))
