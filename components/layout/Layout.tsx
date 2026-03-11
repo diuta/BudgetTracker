@@ -14,6 +14,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     flex: 1,
                     marginLeft: `${SIDEBAR_WIDTH}px`,
                     paddingBottom: "80px",
+                    position: "relative",
                 }}
                 className="md:ml-[220px]"
             >
