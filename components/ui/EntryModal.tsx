@@ -54,13 +54,33 @@ export function EntryModal({ transaction, categories, onSave, onClose }: EntryMo
     return (
         <div
             ref={backdropRef}
-            className="fixed inset-0 z-50 flex items-end md:items-center justify-center"
-            style={{ backgroundColor: "rgba(26,16,8,0.75)" }}
+            style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                zIndex: 100,
+                backgroundColor: "rgba(26,16,8,0.75)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "20px",
+            }}
             onClick={e => { if (e.target === backdropRef.current) onClose(); }}
         >
             <div
-                className="w-full max-w-lg animate-slide-up md:animate-scale-in"
-                style={{ backgroundColor: "var(--cream)", borderTop: "3px solid var(--crimson)" }}
+                className="animate-scale-in"
+                style={{
+                    backgroundColor: "var(--cream)",
+                    borderTop: "3px solid var(--crimson)",
+                    borderRadius: "16px",
+                    width: "100%",
+                    maxWidth: "520px",
+                    maxHeight: "90vh",
+                    overflowY: "auto",
+                    position: "relative",
+                }}
             >
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "24px 28px 20px", borderBottom: "1px solid var(--cream-rule)" }}>
                     <div>
