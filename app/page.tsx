@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useCategories } from "@/hooks/useCategories";
-import { filterByMonth, calcTotals, groupByCategory, groupByDay, getMonthLabel } from "@/utils/dateHelpers";
+import { filterByMonth, calcTotalSpent, groupByCategory, groupByDay, getMonthLabel } from "@/utils/dateHelpers";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { MonthNavigator } from "@/components/ui/MonthNavigator";
 import { EntryModal } from "@/components/ui/EntryModal";
@@ -23,7 +23,7 @@ export default function DashboardPage() {
   const [month, setMonth] = useState(now.getMonth());
 
   const monthTxs = useMemo(() => filterByMonth(transactions, year, month), [transactions, year, month]);
-  const { income, expense, net } = useMemo(() => calcTotals(monthTxs), [monthTxs]);
+  const expense = useMemo(() => calcTotalSpent(monthTxs), [monthTxs]);
   const categoryTotals = useMemo(() => groupByCategory(monthTxs), [monthTxs]);
 
   const donutData = useMemo(() =>
@@ -56,14 +56,14 @@ export default function DashboardPage() {
   return (
     <div className="animate-fade-in">
       <PageHeader
-        eyebrow={`Personal Finance Ledger • ${monthLabel}`}
+        eyebrow={`Expense Tracker • ${monthLabel}`}
         title="Dashboard"
         action={<button className="btn-crimson" onClick={() => setShowModal(true)}>+ New Entry</button>}
       />
 
       <MonthNavigator label={monthLabel} onPrev={prevMonth} onNext={nextMonth} />
 
-      <StatCards income={income} expense={expense} net={net} monthLabel={monthLabel} />
+      <StatCards expense={expense} monthLabel={monthLabel} />
 
       <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: "24px", marginBottom: "48px" }} className="chart-grid">
         <DailySpendingChart data={barData} monthLabel={monthLabel} />
