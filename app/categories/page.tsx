@@ -14,7 +14,7 @@ export default function CategoriesPage() {
             <div className="card-sm" style={{ marginBottom: "40px", borderLeft: "3px solid var(--crimson)" }}>
                 <div className="label-caps" style={{ color: "var(--crimson)", marginBottom: "6px" }}>Fixed Categories</div>
                 <div style={{ fontFamily: "var(--font-body)", fontSize: "1rem", color: "var(--ink-mid)", lineHeight: 1.6 }}>
-                    These six categories are curated for personal finance tracking. They cover all common spending patterns and are used consistently across all entries, charts, and reports.
+                    These six categories are curated for personal expense tracking. They cover all common spending patterns and are used consistently across all entries, charts, and reports.
                 </div>
             </div>
 
@@ -35,18 +35,6 @@ export default function CategoriesPage() {
                         </div>
                     </div>
                 ))}
-
-                <div className="card" style={{ display: "flex", flexDirection: "column", gap: "12px", borderTop: "3px solid #1A4A1A", opacity: 0.7 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                        <span style={{ fontSize: "1.8rem", lineHeight: 1 }}>💰</span>
-                        <div>
-                            <div style={{ fontFamily: "var(--font-display)", fontSize: "1rem", fontWeight: 700, color: "var(--ink)" }}>Income</div>
-                            <div className="label-caps" style={{ marginTop: "2px" }}>System category</div>
-                        </div>
-                    </div>
-                    <hr className="rule-ghost" />
-                    <div className="label-caps" style={{ color: "var(--ink-ghost)" }}>Used for all income entries</div>
-                </div>
             </div>
         </div>
     );
