@@ -377,3 +377,21 @@ input[type="number"] {
     padding: 20px;
   }
 }
+
+/* ─── Bottom Nav (Dynamic Island) ───────────────────────────────────────────── */
+/* Shown only on mobile */
+.bottom-nav-pill {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .bottom-nav-pill {
+    display: flex;
+  }
+}
+
+@media (min-width: 769px) {
+  .bottom-nav-pill {
+    display: none !important;
+  }
+}

@@ -15,14 +15,13 @@ export function BottomNav() {
 
     return (
         <nav
-            className="md:hidden"
+            className="bottom-nav-pill"
             style={{
                 position: "fixed",
                 bottom: "24px",
                 left: "50%",
                 transform: "translateX(-50%)",
                 zIndex: 30,
-                display: "flex",
                 alignItems: "center",
                 gap: "8px",
                 padding: "12px 28px",
